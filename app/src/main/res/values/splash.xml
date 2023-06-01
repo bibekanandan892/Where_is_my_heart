@@ -2,7 +2,7 @@
 <resources>
     <style name="Theme.WhereIsMyHeart.MySplash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">#FBFCFF</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_jetchat</item>
         <item name="postSplashScreenTheme">@style/Theme.WhereIsMyHeart</item>
     </style>
 </resources>

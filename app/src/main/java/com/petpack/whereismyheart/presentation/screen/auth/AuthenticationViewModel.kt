@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.petpack.whereismyheart.domain.usecase.UseCases
 import com.petpack.whereismyheart.presentation.screen.auth.state.GoogleTokenState
-import com.petpack.whereismyheart.presentation.screen.auth.state.HeartStatusState
+import com.petpack.whereismyheart.presentation.screen.heart.state.HeartStatusState
 import com.petpack.whereismyheart.utils.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,15 +23,17 @@ class AuthenticationViewModel @Inject constructor(private val useCases: UseCases
     fun setLoading(loading: Boolean) {
         loadingState.value = loading
     }
-
-    var jwtTokenState: MutableStateFlow<GoogleTokenState> = MutableStateFlow(GoogleTokenState())
-        private set
     var heartStatusState: MutableStateFlow<HeartStatusState> = MutableStateFlow(HeartStatusState())
         private set
 
-    fun getJwtWithGoogleToken(token: String) {
+
+    var jwtTokenState: MutableStateFlow<GoogleTokenState> = MutableStateFlow(GoogleTokenState())
+        private set
+
+
+    fun getJwtWithGoogleToken(token: String,fcmToken: String) {
         viewModelScope.launch {
-            useCases.tokenAuthenticationUseCase.invoke(token = token).collect { networkResult ->
+            useCases.tokenAuthenticationUseCase.invoke(token = token, fcmToken = fcmToken).collect { networkResult ->
                 jwtTokenState.emit(
                     jwtTokenState.value.copy(
                         googleTokenResponse = null,
@@ -73,14 +75,6 @@ class AuthenticationViewModel @Inject constructor(private val useCases: UseCases
 
             }
         }
-    }
-
-    fun saveJwtToken(token: String) {
-        useCases.saveJwtTokenUseCase.invoke(token = token)
-    }
-
-    fun getJwtToken(): String? {
-        return useCases.getJwtTokenUseCase.invoke()
     }
 
     fun getHeartStatus() {
@@ -127,7 +121,54 @@ class AuthenticationViewModel @Inject constructor(private val useCases: UseCases
 
             }
         }
+    }
 
+    fun saveJwtToken(token: String) {
+        useCases.saveJwtTokenUseCase.invoke(token = token)
+    }
+    fun getJwtToken(): String? {
+        return useCases.getJwtTokenUseCase.invoke()
+    }
+
+
+    fun saveConnectedUserHeartId(heartId: String){
+        useCases.saveConnectedHeartIdUseCase.invoke(heartId = heartId)
+    }
+    fun saveConnectUserName(name :String){
+        useCases.saveConnectedUserNameUseCase.invoke(name = name)
+    }
+    fun saveConnectUserEmail(email :String){
+        useCases.saveConnectedUserEmailUseCase.invoke(email = email )
+    }
+
+    fun saveConnectUserPhoto(photoUrl :String){
+        useCases.saveConnectedPhotoUseCase.invoke(photoUrl = photoUrl)
+    }
+
+    fun getConnectedHeartId() : String?{
+       return useCases.getConnectedHeartIdUseCase.invoke()
+    }
+    fun saveUserEmail(email: String){
+        useCases.saveUserEmailUseCase.invoke(email = email)
+    }
+    fun saveUserHeartId(heartId : String){
+        useCases.saveUserHeartIdUseCase.invoke(heartId = heartId)
+    }
+
+    fun saveUserFcm(fcmToken : String){
+        useCases.saveFcmUseCase.invoke(fcmToken = fcmToken)
+    }
+    fun saveUserPhoto(photoUrl: String){
+        useCases.saveUserPhotoUseCase.invoke(photoUrl = photoUrl)
+    }
+    fun saveUserName(name:String){
+        useCases.saveUserNameUseCase.invoke(name = name)
+    }
+    fun getUserHeartId() : String?{
+        return useCases.getUserHeartIdUseCase.invoke()
+    }
+    fun getUserFcm() : String?{
+        return useCases.getFcmUseCase.invoke()
     }
 
 }

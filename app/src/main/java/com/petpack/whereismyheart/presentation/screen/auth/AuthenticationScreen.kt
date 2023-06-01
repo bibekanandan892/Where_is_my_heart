@@ -12,7 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import com.petpack.whereismyheart.presentation.screen.auth.state.GoogleTokenState
-import com.petpack.whereismyheart.presentation.screen.auth.state.HeartStatusState
+import com.petpack.whereismyheart.presentation.screen.heart.state.HeartStatusState
 import com.petpack.whereismyheart.utils.Constants.CLIENT_ID
 import com.stevdzasan.messagebar.ContentWithMessageBar
 import com.stevdzasan.messagebar.MessageBarState
@@ -27,12 +27,8 @@ fun AuthenticationScreen(
     messageBarState: MessageBarState,
     onButtonClicked: () -> Unit,
     onSuccessfulSignIn: (String) -> Unit,
-    onFailedFirebaseSignIn: (Exception) -> Unit,
     onDialogDismissed: (String) -> Unit,
     navigateToChat: () -> Unit,
-    jwtTokenState: State<GoogleTokenState>,
-    heartStatusState: State<HeartStatusState>,
-    onReceivedJwt: (token : String) -> Unit
 ) {
     Scaffold(
         modifier = Modifier
@@ -42,11 +38,8 @@ fun AuthenticationScreen(
         content = {
             ContentWithMessageBar(messageBarState = messageBarState) {
                 AuthenticationContent(
-                    jwtTokenState = jwtTokenState,
                     loadingState = loadingState,
                     onButtonClicked = onButtonClicked,
-                    heartStatusState = heartStatusState,
-                    onReceivedJwt = onReceivedJwt
                 )
             }
         }

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "484853779739",
+    "project_id": "where-is-my-heart-a803a",
+    "storage_bucket": "where-is-my-heart-a803a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:484853779739:android:01b349f4cd1219aa65d7be",
+        "android_client_info": {
+          "package_name": "com.petpack.whereismyheart"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "484853779739-pstl8vmgae0699qukfu15gir72oloogu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBETMv3Vacfluubqlr2I5M07VYXO0Ug7Dg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "484853779739-pstl8vmgae0699qukfu15gir72oloogu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

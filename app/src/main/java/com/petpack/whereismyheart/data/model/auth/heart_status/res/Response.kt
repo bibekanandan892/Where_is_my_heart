@@ -11,5 +11,9 @@ data class Response(
     val name: String?,
     val profilePhoto: String?,
     val subId: String?,
+    val connectedUserName: String? = null,
+    val connectedUserEmail: String? = null,
+    val connectUserPhoto: String? = null,
+    val fcmToken : String? = null,
     val userHeartId: String?
 )

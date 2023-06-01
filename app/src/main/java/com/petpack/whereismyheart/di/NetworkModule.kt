@@ -1,29 +1,37 @@
 package com.petpack.whereismyheart.di
 
+import android.app.Application
 import android.content.Context
-import android.util.Log
-import com.petpack.whereismyheart.data.remote.UserService
-import com.petpack.whereismyheart.data.remote.UserServiceImpl
+import com.petpack.whereismyheart.data.local.AppDataBase
+import com.petpack.whereismyheart.data.local.ChatsDao
+
+import com.petpack.whereismyheart.data.repository.ChatSocketServiceImpl
 import com.petpack.whereismyheart.data.repository.DataStoreOperationsImpl
+import com.petpack.whereismyheart.data.repository.ReadReceiptServiceImpl
 import com.petpack.whereismyheart.data.repository.UserRepositoryImpl
+import com.petpack.whereismyheart.domain.repository.ChatSocketService
 import com.petpack.whereismyheart.domain.repository.DataStoreOperations
+import com.petpack.whereismyheart.domain.repository.ReadReceiptService
 import com.petpack.whereismyheart.domain.repository.UserRepository
+import com.petpack.whereismyheart.utils.ConnectivityObserver
+import com.petpack.whereismyheart.utils.ConnectivityObserverImpl
+import com.petpack.whereismyheart.utils.connectivityManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.*
+import io.ktor.client.engine.android.*
 import io.ktor.client.engine.cio.*
-import io.ktor.client.features.*
-import io.ktor.client.features.auth.*
-import io.ktor.client.features.auth.providers.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
-import io.ktor.client.features.logging.*
-import io.ktor.client.features.websocket.*
+import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.kotlinx.serializer.*
+import io.ktor.client.plugins.logging.*
+import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import javax.inject.Singleton
 
@@ -34,17 +42,12 @@ object NetworkModule{
     @Singleton
     @Provides
     fun provideHttpClient(dataStoreOperations: DataStoreOperations): HttpClient {
-        val json = Json {
-            encodeDefaults= true
-            ignoreUnknownKeys = true
-            isLenient = true
-        }
+
 
         return HttpClient(CIO) {
             install(WebSockets)
-            install(JsonFeature) {
-                serializer = KotlinxSerializer(json)
-
+            install(ContentNegotiation) {
+                json(contentType = ContentType.Application.Json)
             }
              install(HttpTimeout){
                  socketTimeoutMillis = 60000
@@ -55,14 +58,11 @@ object NetworkModule{
                  contentType(ContentType.Application.Json)
                  accept(ContentType.Application.Json)
                  header("Authorization", "Bearer ${dataStoreOperations.getToken().toString()}")
+                 header("userHeartId", value = "${dataStoreOperations.getUserHeartId()}")
              }
-
              install(Logging){
-                 logger = object: Logger{
-                     override fun log(message: String) {
-                         Log.d("network", "log: $message")
-                     }
-                 }
+                 logger = Logger.ANDROID
+                 level = LogLevel.ALL
              }
         }
     }
@@ -73,7 +73,25 @@ object NetworkModule{
     }
     @Singleton
     @Provides
+    fun provideChattingService(httpClient: HttpClient,chatsDao: ChatsDao):ChatSocketService{
+        return ChatSocketServiceImpl(httpClient = httpClient, chatsDao = chatsDao)
+    }
+
+    @Singleton
+    @Provides
     fun provideUserRepository(httpClient: HttpClient,dataStoreOperations: DataStoreOperations):UserRepository{
         return UserRepositoryImpl(httpClient = httpClient, dataStoreOperations = dataStoreOperations)
     }
+    @Singleton
+    @Provides
+    fun provideReadReceiptServices(httpClient: HttpClient,chatsDao: ChatsDao):ReadReceiptService{
+        return ReadReceiptServiceImpl(httpClient = httpClient, chatsDao = chatsDao)
+    }
+
+    @Singleton
+    @Provides
+    fun provideConnectivityObserver(application: Application): ConnectivityObserver {
+        return ConnectivityObserverImpl(application.connectivityManager)
+    }
+
 }
